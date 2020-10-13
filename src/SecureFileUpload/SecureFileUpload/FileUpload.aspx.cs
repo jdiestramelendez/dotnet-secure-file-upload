@@ -54,25 +54,7 @@ namespace SecureFileUpload
             {
                 if (fuCsvFile.PostedFile.ContentLength > 0)
                 {
-                    #region Validate File
-                    var csvParserOptions = new CsvParserOptions(true, ',');
-                    var csvMapper = new CsvItemMapping();
-                    var csvParser = new CsvParser<CsvItem>(csvParserOptions, csvMapper);
-
-                    var parsedItems = csvParser
-                        .ReadFromStream(fuCsvFile.PostedFile.InputStream, Encoding.ASCII)
-                        .ToList();
-
-                    var parseErrors = new List<string>();
-
-                    foreach (var parsedItem in parsedItems)
-                    {
-                        if (!parsedItem.IsValid)
-                        {
-                            parseErrors.Add($"Row {parsedItem.RowIndex}, Problem: {parsedItem.Error.Value}");
-                        }
-                    }
-                    #endregion
+                    var parseErrors = CsvFile.Validate(fuCsvFile.PostedFile.InputStream);
 
                     if (parseErrors.Count > 0)
                     {

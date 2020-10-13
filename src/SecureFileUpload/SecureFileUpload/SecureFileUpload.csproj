@@ -238,6 +238,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\CsvFile.cs" />
     <Compile Include="Models\CsvItem.cs" />
     <Compile Include="Models\CsvItemMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
