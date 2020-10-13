@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SecureFileUpload.FileUtilities;
+using System;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
 
@@ -6,6 +7,13 @@ namespace SecureFileUpload
 {
     public partial class FileUpload : System.Web.UI.Page
     {
+        private IFileStorage fileStorage;
+
+        public FileUpload()
+        {
+            this.fileStorage = new LocalFileStorage(Server.MapPath("App_Data"));
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             UpdateFileList();
@@ -14,14 +22,11 @@ namespace SecureFileUpload
 
         private void UpdateFileList()
         {
-            string SaveLocation = Server.MapPath("App_Data");
-
             var items = new List<ListItem>();
 
-            foreach (string filepath in System.IO.Directory.GetFiles(SaveLocation))
+            foreach (string filepath in fileStorage.GetFiles())
             {
-                string filename = System.IO.Path.GetFileName(filepath);
-                items.Add(new ListItem { Text = filename, Value = filename });
+                items.Add(new ListItem { Text = filepath, Value = filepath });
             }
 
             dlFiles.DataSource = items;
@@ -33,8 +38,7 @@ namespace SecureFileUpload
             if (e.CommandName == "DeleteFile")
             {
                 string file = e.CommandArgument as string;
-                string SaveLocation = System.IO.Path.Combine(Server.MapPath("App_Data"), file);
-                System.IO.File.Delete(SaveLocation);
+                fileStorage.DeleteFile(file);
                 ShowResult($"Deleted {file}");
                 UpdateFileList();
             }
@@ -46,11 +50,9 @@ namespace SecureFileUpload
             {
                 if (fuCsvFile.PostedFile.ContentLength > 0)
                 {
-                    string fn = System.IO.Path.GetFileName(fuCsvFile.PostedFile.FileName);
-                    string SaveLocation = System.IO.Path.Combine(Server.MapPath("App_Data"), fn);
                     try
                     {
-                        fuCsvFile.PostedFile.SaveAs(SaveLocation);
+                        fileStorage.SavePostedFile(fuCsvFile.PostedFile);
                         ShowResult("The file has been uploaded.");
                         UpdateFileList();
                     }

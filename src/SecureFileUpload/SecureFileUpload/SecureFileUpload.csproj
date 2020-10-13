@@ -230,6 +230,8 @@
     <Compile Include="FileUpload.aspx.designer.cs">
       <DependentUpon>FileUpload.aspx</DependentUpon>
     </Compile>
+    <Compile Include="FileUtilities\IFileStorage.cs" />
+    <Compile Include="FileUtilities\LocalFileStorage.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
