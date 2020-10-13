@@ -1,7 +1,11 @@
 ﻿using SecureFileUpload.FileUtilities;
+using SecureFileUpload.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Web.UI.WebControls;
+using TinyCsvParser;
 
 namespace SecureFileUpload
 {
@@ -50,15 +54,42 @@ namespace SecureFileUpload
             {
                 if (fuCsvFile.PostedFile.ContentLength > 0)
                 {
-                    try
+                    #region Validate File
+                    var csvParserOptions = new CsvParserOptions(true, ',');
+                    var csvMapper = new CsvItemMapping();
+                    var csvParser = new CsvParser<CsvItem>(csvParserOptions, csvMapper);
+
+                    var parsedItems = csvParser
+                        .ReadFromStream(fuCsvFile.PostedFile.InputStream, Encoding.ASCII)
+                        .ToList();
+
+                    var parseErrors = new List<string>();
+
+                    foreach (var parsedItem in parsedItems)
                     {
-                        fileStorage.SavePostedFile(fuCsvFile.PostedFile);
-                        ShowResult("The file has been uploaded.");
-                        UpdateFileList();
+                        if (!parsedItem.IsValid)
+                        {
+                            parseErrors.Add($"Row {parsedItem.RowIndex}, Problem: {parsedItem.Error.Value}");
+                        }
                     }
-                    catch (Exception ex)
+                    #endregion
+
+                    if (parseErrors.Count > 0)
                     {
-                        ShowError(ex.Message);
+                        ShowError("Errors found in file: <br />" + string.Join("<br />", parseErrors));
+                    }
+                    else
+                    {
+                        try
+                        {
+                            fileStorage.SavePostedFile(fuCsvFile.PostedFile);
+                            ShowResult("The file has been uploaded.");
+                            UpdateFileList();
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowError(ex.Message);
+                        }
                     }
                 }
                 else
