@@ -44,7 +44,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Cloudmersive.APIClient.NET.VirusScan, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cloudmersive.APIClient.NET.VirusScan.3.0.3\lib\net452\Cloudmersive.APIClient.NET.VirusScan.dll</HintPath>
+    </Reference>
+    <Reference Include="JsonSubTypes, Version=1.2.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\JsonSubTypes.1.2.0\lib\net47\JsonSubTypes.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="RestSharp, Version=106.6.10.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.6.10\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -233,8 +242,11 @@
     <Compile Include="FileUpload.aspx.designer.cs">
       <DependentUpon>FileUpload.aspx</DependentUpon>
     </Compile>
+    <Compile Include="FileUtilities\CloudmersiveVirusScanner.cs" />
     <Compile Include="FileUtilities\IFileStorage.cs" />
+    <Compile Include="FileUtilities\IVirusScanner.cs" />
     <Compile Include="FileUtilities\LocalFileStorage.cs" />
+    <Compile Include="FileUtilities\ScanResult.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
