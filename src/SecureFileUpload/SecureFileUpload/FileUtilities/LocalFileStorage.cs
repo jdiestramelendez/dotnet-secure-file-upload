@@ -38,10 +38,11 @@ namespace SecureFileUpload.FileUtilities
             return results;
         }
 
-        public void SavePostedFile(HttpPostedFile postedFile)
+        public void SavePostedFile(string name, Stream stream)
         {
-            string path = ResolveFullPath(Path.GetFileName(postedFile.FileName));
-            postedFile.SaveAs(path);
+            string path = ResolveFullPath(Path.GetFileName(name));
+            using (var outputFileStream = new FileStream(path, FileMode.Create))
+                stream.CopyTo(outputFileStream);
         }
     }
 }

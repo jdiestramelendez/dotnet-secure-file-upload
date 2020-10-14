@@ -7,7 +7,7 @@ namespace SecureFileUpload.FileUtilities
     public interface IFileStorage
     {
         List<string> GetFiles();
-        void SavePostedFile(HttpPostedFile postedFile);
+        void SavePostedFile(string name, Stream stream);
         void DeleteFile(string name);
     }
 }

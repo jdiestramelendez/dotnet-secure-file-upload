@@ -5,6 +5,19 @@
     <div class="container">
         <div class="panel panel-info">
             <div class="panel-heading">
+                <h3 class="panel-title">File Storage Provider</h3>
+            </div>
+            <div class="panel-body">
+                <asp:RadioButtonList ID="rblStorageProvider" runat="server" AutoPostBack="True" OnSelectedIndexChanged="rblStorageProvider_SelectedIndexChanged">
+                    <asp:ListItem Selected="True">Local</asp:ListItem>
+                    <asp:ListItem Value="AzureStorageBlobs">Azure Storage Blobs</asp:ListItem>
+                </asp:RadioButtonList>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="panel panel-info">
+            <div class="panel-heading">
                 <h3 class="panel-title">File List</h3>
             </div>
             <div class="panel-body">

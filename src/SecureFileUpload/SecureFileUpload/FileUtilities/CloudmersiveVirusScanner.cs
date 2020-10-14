@@ -27,6 +27,8 @@ namespace SecureFileUpload.FileUtilities
 
             try
             {
+                // ensure stream is ready for read
+                stream.Position = 0;
                 var r = apiInstance.ScanFileAdvanced(stream, false);
 
                 if (r.CleanResult.HasValue)

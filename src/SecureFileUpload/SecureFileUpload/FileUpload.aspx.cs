@@ -8,17 +8,23 @@ namespace SecureFileUpload
 {
     public partial class FileUpload : System.Web.UI.Page
     {
+        private enum FileStorageProvider
+        {
+            Local,
+            AzureStorageBlobs
+        }
+
         private IFileStorage fileStorage;
         private IVirusScanner virusScanner;
 
         public FileUpload()
         {
-            this.fileStorage = new LocalFileStorage(Server.MapPath("App_Data"));
             this.virusScanner = new CloudmersiveVirusScanner();
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            SetFileStorage(CurrentFileStorageProvider);
             UpdateFileList();
             ResetForm();
         }
@@ -53,11 +59,12 @@ namespace SecureFileUpload
             {
                 if (fuCsvFile.PostedFile.ContentLength > 0)
                 {
-                    var scanResult = virusScanner.ScanStream(fuCsvFile.PostedFile.InputStream);
+                    var memoryStream = StreamUtility.CopyToMemoryStream(fuCsvFile.PostedFile.InputStream);
+
+                    var scanResult = virusScanner.ScanStream(StreamUtility.CopyToMemoryStream(memoryStream));
                     if (scanResult.IsSafe)
                     {
-
-                        var parseErrors = CsvFile.Validate(fuCsvFile.PostedFile.InputStream);
+                        var parseErrors = CsvFile.Validate(StreamUtility.CopyToMemoryStream(memoryStream));
 
                         if (parseErrors.Count > 0)
                         {
@@ -67,7 +74,7 @@ namespace SecureFileUpload
                         {
                             try
                             {
-                                fileStorage.SavePostedFile(fuCsvFile.PostedFile);
+                                fileStorage.SavePostedFile(fuCsvFile.PostedFile.FileName, StreamUtility.CopyToMemoryStream(memoryStream));
                                 ShowResult("The file has been uploaded.");
                                 UpdateFileList();
                             }
@@ -111,6 +118,33 @@ namespace SecureFileUpload
             pnlResult.Visible = false;
             pnlError.Visible = true;
             litError.Text = errorMessage;
+        }
+
+        private FileStorageProvider CurrentFileStorageProvider
+        {
+            get
+            {
+                return (FileStorageProvider)Enum.Parse(typeof(FileStorageProvider), rblStorageProvider.SelectedValue);
+            }
+        }
+
+        protected void rblStorageProvider_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SetFileStorage(CurrentFileStorageProvider);
+            UpdateFileList();
+        }
+
+        private void SetFileStorage(FileStorageProvider provider)
+        {
+            switch (provider)
+            {
+                case FileStorageProvider.AzureStorageBlobs:
+                    this.fileStorage = new AzureFileStorage();
+                    break;
+                default:
+                    this.fileStorage = new LocalFileStorage(Server.MapPath("App_Data"));
+                    break;
+            }
         }
     }
 }

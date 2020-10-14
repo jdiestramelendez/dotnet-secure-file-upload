@@ -22,7 +22,6 @@ namespace SecureFileUpload.Models
             var csvParser = new CsvParser<CsvItem>(csvParserOptions, csvMapper);
 
             stream.Position = 0;
-
             var parsedItems = csvParser
                 .ReadFromStream(stream, Encoding.ASCII)
                 .ToList();
