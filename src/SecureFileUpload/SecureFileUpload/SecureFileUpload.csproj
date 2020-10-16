@@ -211,7 +211,9 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
+    <None Include="SampleFiles\valid_1mb.csv" />
     <None Include="SampleFiles\empty.csv" />
+    <None Include="SampleFiles\valid_5mb.csv" />
     <None Include="SampleFiles\valid.csv" />
     <None Include="SampleFiles\invalid.csv" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
