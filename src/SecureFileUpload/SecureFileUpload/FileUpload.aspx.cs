@@ -2,6 +2,7 @@
 using SecureFileUpload.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Web.UI.WebControls;
 
 namespace SecureFileUpload
@@ -28,8 +29,8 @@ namespace SecureFileUpload
         protected void Page_Load(object sender, EventArgs e)
         {
             UpdateFileList();
-            ResetForm(FileStorageProvider.Local);
-            ResetForm(FileStorageProvider.AzureStorageBlobs );
+            //ResetForm(FileStorageProvider.Local);
+            //ResetForm(FileStorageProvider.AzureStorageBlobs );
         }
 
         private void UpdateFileList()
@@ -66,8 +67,10 @@ namespace SecureFileUpload
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
+            var stopwatch = new Stopwatch();
             FileStorageProvider provider = FileStorageProvider.Local;
             System.Web.UI.WebControls.FileUpload fileUploadControl = fuCsvFileLocal;
+            var tracker = new OperationsGroup();
 
             if (((Button)sender).ID.Equals("btnSubmitAzure"))
             {
@@ -81,10 +84,17 @@ namespace SecureFileUpload
                 {
                     var memoryStream = StreamUtility.CopyToMemoryStream(fileUploadControl.PostedFile.InputStream);
 
+                    stopwatch.Start();
                     var scanResult = virusScanner.ScanStream(StreamUtility.CopyToMemoryStream(memoryStream));
+                    stopwatch.Stop();
+                    tracker.Add("Virus Scan", stopwatch.ElapsedMilliseconds);
+
                     if (scanResult.IsSafe)
                     {
+                        stopwatch.Restart();
                         var parseErrors = CsvFile.Validate(StreamUtility.CopyToMemoryStream(memoryStream));
+                        stopwatch.Stop();
+                        tracker.Add("CSV Validation", stopwatch.ElapsedMilliseconds);
 
                         if (parseErrors.Count > 0)
                         {
@@ -94,6 +104,7 @@ namespace SecureFileUpload
                         {
                             try
                             {
+                                stopwatch.Restart();
                                 switch (provider)
                                 {
                                     case FileStorageProvider.AzureStorageBlobs:
@@ -103,7 +114,9 @@ namespace SecureFileUpload
                                         localFileStorage.SavePostedFile(fileUploadControl.PostedFile.FileName, StreamUtility.CopyToMemoryStream(memoryStream));
                                         break;
                                 }
-                                ShowResult(provider, "The file has been uploaded.");
+                                stopwatch.Stop();
+                                tracker.Add("Storage", stopwatch.ElapsedMilliseconds);
+                                ShowResult(provider, "The file has been uploaded.", tracker);
                                 UpdateFileList();
                             }
                             catch (Exception ex)
@@ -143,7 +156,7 @@ namespace SecureFileUpload
             }
         }
 
-        private void ShowResult(FileStorageProvider provider, string resultMessage)
+        private void ShowResult(FileStorageProvider provider, string resultMessage, OperationsGroup operationsGroup = null)
         {
             switch (provider)
             {
@@ -151,11 +164,19 @@ namespace SecureFileUpload
                     pnlResultLocal.Visible = true;
                     pnlErrorLocal.Visible = false;
                     litResultsLocal.Text = resultMessage;
+                    if (operationsGroup != null)
+                    {
+                        litResultsLocal.Text += operationsGroup.ToString();
+                    }
                     break;
                 case FileStorageProvider.AzureStorageBlobs:
                     pnlResultAzure.Visible = true;
                     pnlErrorAzure.Visible = false;
                     litResultsAzure.Text = resultMessage;
+                    if (operationsGroup != null)
+                    {
+                        litResultsAzure.Text += operationsGroup.ToString();
+                    }
                     break;
             }
         }

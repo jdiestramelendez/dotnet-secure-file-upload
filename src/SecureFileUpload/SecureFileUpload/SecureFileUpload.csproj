@@ -295,6 +295,8 @@
     <Compile Include="Models\CsvFile.cs" />
     <Compile Include="Models\CsvItem.cs" />
     <Compile Include="Models\CsvItemMapping.cs" />
+    <Compile Include="Models\OperationResult.cs" />
+    <Compile Include="Models\OperationsGroup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
