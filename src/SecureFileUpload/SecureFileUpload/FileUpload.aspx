@@ -16,11 +16,11 @@
                             </div>
                             <div class="panel-body">
                                 <div class="container-fluid">
-                                    <asp:DataList ID="dlFilesLocal" runat="server" DataKeyField="Value" OnItemCommand="dlFiles_ItemCommand">
+                                    <asp:DataList ID="dlFilesLocal" runat="server" DataKeyField="Value" OnItemCommand="dlFiles_ItemCommand" RepeatLayout="Flow">
                                         <ItemTemplate>
-                                            <div class="row">
-                                                <div class="col-md-6"><%# Eval("Value") %></div>
-                                                <div class="col-md-6">
+                                            <div class="row row-no-gutters">
+                                                <div class="col-md-11">- <%# Eval("Value") %></div>
+                                                <div class="col-md-1">
                                                     <asp:LinkButton ID="lbDeleteFile" runat="server" CommandName="DeleteFile" CommandArgument='<%# Eval("Value") %>' class="btn btn-danger btn-xs">
                                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                                     </asp:LinkButton>
@@ -75,12 +75,12 @@
                                 <h3 class="panel-title">File List</h3>
                             </div>
                             <div class="panel-body">
-                                <div class="container-fluid">
-                                    <asp:DataList ID="dlFilesAzure" runat="server" DataKeyField="Value" OnItemCommand="dlFiles_ItemCommand">
+                                <div class="container-<%--fluid--%>">
+                                    <asp:DataList ID="dlFilesAzure" runat="server" DataKeyField="Value" OnItemCommand="dlFiles_ItemCommand" RepeatLayout="Flow">
                                         <ItemTemplate>
-                                            <div class="row">
-                                                <div class="col-md-6"><%# Eval("Value") %></div>
-                                                <div class="col-md-6">
+                                            <div class="row row-no-gutters">
+                                                <div class="col-md-11">- <%# Eval("Value") %></div>
+                                                <div class="col-md-1">
                                                     <asp:LinkButton ID="lbDeleteFile" runat="server" CommandName="DeleteFile" CommandArgument='<%# Eval("Value") %>' class="btn btn-danger btn-xs">
                                 <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
                                                     </asp:LinkButton>
