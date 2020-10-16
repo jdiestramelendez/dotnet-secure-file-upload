@@ -14,32 +14,35 @@ namespace SecureFileUpload
             AzureStorageBlobs
         }
 
-        private IFileStorage fileStorage;
+        private IFileStorage localFileStorage;
+        private IFileStorage azureFileStorage;
         private IVirusScanner virusScanner;
 
         public FileUpload()
         {
+            this.localFileStorage = new LocalFileStorage(Server.MapPath("App_Data"));
+            this.azureFileStorage = new AzureFileStorage();
             this.virusScanner = new CloudmersiveVirusScanner();
         }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            SetFileStorage(CurrentFileStorageProvider);
             UpdateFileList();
-            ResetForm();
+            ResetForm(FileStorageProvider.Local);
+            ResetForm(FileStorageProvider.AzureStorageBlobs );
         }
 
         private void UpdateFileList()
         {
             var items = new List<ListItem>();
+            localFileStorage.GetFiles().ForEach(f => items.Add(new ListItem { Text = f, Value = f }));
+            dlFilesLocal.DataSource = items;
+            dlFilesLocal.DataBind();
 
-            foreach (string filepath in fileStorage.GetFiles())
-            {
-                items.Add(new ListItem { Text = filepath, Value = filepath });
-            }
-
-            dlFiles.DataSource = items;
-            dlFiles.DataBind();
+            items = new List<ListItem>();
+            azureFileStorage.GetFiles().ForEach(f => items.Add(new ListItem { Text = f, Value = f }));
+            dlFilesAzure.DataSource = items;
+            dlFilesAzure.DataBind();
         }
 
         protected void dlFiles_ItemCommand(object source, DataListCommandEventArgs e)
@@ -47,19 +50,36 @@ namespace SecureFileUpload
             if (e.CommandName == "DeleteFile")
             {
                 string file = e.CommandArgument as string;
-                fileStorage.DeleteFile(file);
-                ShowResult($"Deleted {file}");
-                UpdateFileList();
+                if (((DataList)source).ID == "dlFilesLocal")
+                {
+                    localFileStorage.DeleteFile(file);
+                    ShowResult(FileStorageProvider.Local, $"Deleted {file}");
+                }
+                if (((DataList)source).ID == "dlFilesAzure")
+                {
+                    azureFileStorage.DeleteFile(file);
+                    ShowResult(FileStorageProvider.AzureStorageBlobs, $"Deleted {file}");
+                }
             }
+            UpdateFileList();
         }
 
         protected void btnSubmit_Click(object sender, EventArgs e)
         {
-            if (fuCsvFile.PostedFile != null)
+            FileStorageProvider provider = FileStorageProvider.Local;
+            System.Web.UI.WebControls.FileUpload fileUploadControl = fuCsvFileLocal;
+
+            if (((Button)sender).ID.Equals("btnSubmitAzure"))
             {
-                if (fuCsvFile.PostedFile.ContentLength > 0)
+                provider = FileStorageProvider.AzureStorageBlobs;
+                fileUploadControl = fuCsvFileAzure;
+            }
+
+            if (fileUploadControl.PostedFile != null)
+            {
+                if (fileUploadControl.PostedFile.ContentLength > 0)
                 {
-                    var memoryStream = StreamUtility.CopyToMemoryStream(fuCsvFile.PostedFile.InputStream);
+                    var memoryStream = StreamUtility.CopyToMemoryStream(fileUploadControl.PostedFile.InputStream);
 
                     var scanResult = virusScanner.ScanStream(StreamUtility.CopyToMemoryStream(memoryStream));
                     if (scanResult.IsSafe)
@@ -68,83 +88,94 @@ namespace SecureFileUpload
 
                         if (parseErrors.Count > 0)
                         {
-                            ShowError("Errors found in file: <br />" + string.Join("<br />", parseErrors));
+                            ShowError(provider, "Errors found in file: <br />" + string.Join("<br />", parseErrors));
                         }
                         else
                         {
                             try
                             {
-                                fileStorage.SavePostedFile(fuCsvFile.PostedFile.FileName, StreamUtility.CopyToMemoryStream(memoryStream));
-                                ShowResult("The file has been uploaded.");
+                                switch (provider)
+                                {
+                                    case FileStorageProvider.AzureStorageBlobs:
+                                        azureFileStorage.SavePostedFile(fileUploadControl.PostedFile.FileName, StreamUtility.CopyToMemoryStream(memoryStream));
+                                        break;
+                                    case FileStorageProvider.Local:
+                                        localFileStorage.SavePostedFile(fileUploadControl.PostedFile.FileName, StreamUtility.CopyToMemoryStream(memoryStream));
+                                        break;
+                                }
+                                ShowResult(provider, "The file has been uploaded.");
                                 UpdateFileList();
                             }
                             catch (Exception ex)
                             {
-                                ShowError(ex.Message);
+                                ShowError(provider, ex.Message);
                             }
                         }
                     }
                     else
                     {
-                        ShowError($"Virus scan found issues: {scanResult.Message}");
+                        ShowError(provider, $"Virus scan found issues: {scanResult.Message}");
                     }
                 }
                 else
                 {
-                    ShowError("Empty file uploaded.");
+                    ShowError(provider, "Empty file uploaded.");
                 }
             }
             else
             {
-                ShowResult("Please select a file to upload.");
+                ShowResult(provider, "Please select a file to upload.");
             }
         }
 
-        private void ResetForm()
-        {
-            pnlResult.Visible = false;
-            pnlError.Visible = false;
-        }
-
-        private void ShowResult(string resultMessage)
-        {
-            pnlResult.Visible = true;
-            pnlError.Visible = false;
-            litResults.Text = resultMessage;
-        }
-
-        private void ShowError(string errorMessage)
-        {
-            pnlResult.Visible = false;
-            pnlError.Visible = true;
-            litError.Text = errorMessage;
-        }
-
-        private FileStorageProvider CurrentFileStorageProvider
-        {
-            get
-            {
-                return (FileStorageProvider)Enum.Parse(typeof(FileStorageProvider), rblStorageProvider.SelectedValue);
-            }
-        }
-
-        protected void rblStorageProvider_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SetFileStorage(CurrentFileStorageProvider);
-            UpdateFileList();
-        }
-
-        private void SetFileStorage(FileStorageProvider provider)
+        private void ResetForm(FileStorageProvider provider)
         {
             switch (provider)
             {
-                case FileStorageProvider.AzureStorageBlobs:
-                    this.fileStorage = new AzureFileStorage();
+                case FileStorageProvider.Local:
+                    pnlResultLocal.Visible = false;
+                    pnlErrorLocal.Visible = false;
                     break;
-                default:
-                    this.fileStorage = new LocalFileStorage(Server.MapPath("App_Data"));
+                case FileStorageProvider.AzureStorageBlobs:
+                    pnlResultAzure.Visible = false;
+                    pnlErrorAzure.Visible = false;
                     break;
             }
+        }
+
+        private void ShowResult(FileStorageProvider provider, string resultMessage)
+        {
+            switch (provider)
+            {
+                case FileStorageProvider.Local:
+                    pnlResultLocal.Visible = true;
+                    pnlErrorLocal.Visible = false;
+                    litResultsLocal.Text = resultMessage;
+                    break;
+                case FileStorageProvider.AzureStorageBlobs:
+                    pnlResultAzure.Visible = true;
+                    pnlErrorAzure.Visible = false;
+                    litResultsAzure.Text = resultMessage;
+                    break;
+            }
+        }
+
+        private void ShowError(FileStorageProvider provider, string errorMessage)
+        {
+            switch (provider)
+            {
+                case FileStorageProvider.Local:
+                    pnlResultLocal.Visible = false;
+                    pnlErrorLocal.Visible = true;
+                    litErrorLocal.Text = errorMessage;
+                    break;
+                case FileStorageProvider.AzureStorageBlobs:
+                    pnlResultAzure.Visible = false;
+                    pnlErrorAzure.Visible = true;
+                    litErrorAzure.Text = errorMessage;
+                    break;
+            }
+
         }
     }
 }

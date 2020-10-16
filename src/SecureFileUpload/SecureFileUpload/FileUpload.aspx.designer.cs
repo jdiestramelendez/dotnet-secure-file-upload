@@ -15,22 +15,85 @@ namespace SecureFileUpload
     {
 
         /// <summary>
-        /// rblStorageProvider control.
+        /// dlFilesLocal control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RadioButtonList rblStorageProvider;
+        protected global::System.Web.UI.WebControls.DataList dlFilesLocal;
 
         /// <summary>
-        /// dlFiles control.
+        /// lblFileLocal control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DataList dlFiles;
+        protected global::System.Web.UI.WebControls.Label lblFileLocal;
+
+        /// <summary>
+        /// fuCsvFileLocal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.FileUpload fuCsvFileLocal;
+
+        /// <summary>
+        /// btnSubmitLocal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSubmitLocal;
+
+        /// <summary>
+        /// pnlErrorLocal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlErrorLocal;
+
+        /// <summary>
+        /// litErrorLocal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litErrorLocal;
+
+        /// <summary>
+        /// pnlResultLocal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlResultLocal;
+
+        /// <summary>
+        /// litResultsLocal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litResultsLocal;
+
+        /// <summary>
+        /// dlFilesAzure control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DataList dlFilesAzure;
 
         /// <summary>
         /// lblFile control.
@@ -42,57 +105,57 @@ namespace SecureFileUpload
         protected global::System.Web.UI.WebControls.Label lblFile;
 
         /// <summary>
-        /// fuCsvFile control.
+        /// fuCsvFileAzure control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.FileUpload fuCsvFile;
+        protected global::System.Web.UI.WebControls.FileUpload fuCsvFileAzure;
 
         /// <summary>
-        /// btnSubmit control.
+        /// btnSubmitAzure control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSubmit;
+        protected global::System.Web.UI.WebControls.Button btnSubmitAzure;
 
         /// <summary>
-        /// pnlError control.
+        /// pnlErrorAzure control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlError;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlErrorAzure;
 
         /// <summary>
-        /// litError control.
+        /// litErrorAzure control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litError;
+        protected global::System.Web.UI.WebControls.Literal litErrorAzure;
 
         /// <summary>
-        /// pnlResult control.
+        /// pnlResultAzure control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlResult;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl pnlResultAzure;
 
         /// <summary>
-        /// litResults control.
+        /// litResultsAzure control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal litResults;
+        protected global::System.Web.UI.WebControls.Literal litResultsAzure;
     }
 }
