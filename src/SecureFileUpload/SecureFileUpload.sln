@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureFileUpload", "SecureF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileGenerator", "FileGenerator\FileGenerator.csproj", "{950BF91A-2012-4FE1-9516-A6290853E908}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureFileUploadService", "SecureFileUploadService\SecureFileUploadService.csproj", "{8FF51564-5546-4FA6-AB43-EA3E66EEC15A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{950BF91A-2012-4FE1-9516-A6290853E908}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{950BF91A-2012-4FE1-9516-A6290853E908}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{950BF91A-2012-4FE1-9516-A6290853E908}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8FF51564-5546-4FA6-AB43-EA3E66EEC15A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8FF51564-5546-4FA6-AB43-EA3E66EEC15A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8FF51564-5546-4FA6-AB43-EA3E66EEC15A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8FF51564-5546-4FA6-AB43-EA3E66EEC15A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
