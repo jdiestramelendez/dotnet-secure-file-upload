@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Cloudmersive.APIClient.NET.VirusScan.Api;
-using Cloudmersive.APIClient.NET.VirusScan.Client;
+using Cloudmersive.APIClient.NETCore.VirusScan.Api;
+using Cloudmersive.APIClient.NETCore.VirusScan.Client;
 using Microsoft.Extensions.Configuration;
 
 namespace SecureFileUploadService
