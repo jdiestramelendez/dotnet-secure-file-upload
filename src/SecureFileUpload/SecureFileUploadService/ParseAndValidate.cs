@@ -31,7 +31,7 @@ namespace SecureFileUploadService
             var parseErrors = CsvFile.Validate(memoryStream);
             stopWatch.Stop();
 
-            FileTrackerRepository.AddNewOperationResult(myQueueItem, "Parse and Validate", stopWatch.ElapsedMilliseconds);
+            FileTrackerRepository.AddNewOperationResult(myQueueItem, "Parse and Validate", stopWatch.ElapsedMilliseconds, true);
 
             if (parseErrors.Count > 0)
             {

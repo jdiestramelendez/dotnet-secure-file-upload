@@ -10,6 +10,7 @@ namespace SecureFileUploadService
         }
         public string OriginalFileName { get; set; }
         public string FileName { get; set; }
+        public bool ProcessingComplete { get; set; }
         public List<OperationResult> Operations { get; set; }
     }
 }
