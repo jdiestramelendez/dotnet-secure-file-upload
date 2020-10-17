@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Azure.Storage.Blob;
@@ -25,7 +26,12 @@ namespace SecureFileUploadService
             await cloudBlockBlob.DownloadToStreamAsync(memoryStream);
 
             // Parse and Validate File
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
             var parseErrors = CsvFile.Validate(memoryStream);
+            stopWatch.Stop();
+
+            FileTrackerRepository.AddNewOperationResult(myQueueItem, "Parse and Validate", stopWatch.ElapsedMilliseconds);
 
             if (parseErrors.Count > 0)
             {

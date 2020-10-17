@@ -13,6 +13,7 @@ using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Azure.ServiceBus.Core;
 using System.Text;
+using System.Diagnostics;
 
 namespace SecureFileUploadService
 {
@@ -44,10 +45,15 @@ namespace SecureFileUploadService
 
                 log.LogInformation($"Uploading {file.FileName} as {blobName}");
 
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
                 using (var fileStream = file.OpenReadStream())
                 {
                     await cloudBlockBlob.UploadFromStreamAsync(fileStream);
                 }
+                stopWatch.Stop();
+
+                FileTrackerRepository.AddNew(file.FileName, blobName, stopWatch.ElapsedMilliseconds);
 
                 // Add message in queue for next step
                 var config = new ConfigurationBuilder()
