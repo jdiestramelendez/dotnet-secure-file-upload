@@ -33,7 +33,7 @@ namespace SecureFileUploadService
             return fileTracker;
         }
 
-        public static FileTracker UpdateOperationResult(string fileName, string name, long elapsedTimeInMilliseconds, bool? complete = null)
+        public static FileTracker UpdateOperationResult(string fileName, string name, long elapsedTimeInMilliseconds, bool? complete = null, string message = null)
         {
             var fileTracker = Get(fileName);
 
@@ -41,6 +41,7 @@ namespace SecureFileUploadService
 
             operationResult.ElapsedTimeInMilliseconds = elapsedTimeInMilliseconds;
             operationResult.Complete = true;
+            operationResult.Message = message;
 
             if (complete.HasValue)
                 fileTracker.ProcessingComplete = complete.Value;
