@@ -25,51 +25,59 @@ namespace SecureFileUploadService
             ILogger log,
             [Blob("%AzureStorage:Container%", FileAccess.Write, Connection = "AzureStorage:ConnectionString")] CloudBlobContainer cloudBlobContainer)
         {
-            log.LogInformation("File Upload in progress!");
-
             var content = await req.ReadFormAsync();
             var blobNames = new List<string>();
 
-            foreach (var file in content.Files)
+            if (content.Files.Count > 0)
             {
-                var blobName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}".Replace("\"", "");
-                var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
-                var xff = req.Headers.FirstOrDefault(x => x.Key == "X-Forwarded-For").Value.FirstOrDefault();
+                log.LogInformation("File Upload in progress!");
 
-                blobNames.Add(blobName);
-                cloudBlockBlob.Properties.ContentDisposition = file.ContentDisposition;
-                cloudBlockBlob.Properties.ContentType = file.ContentType;
-                cloudBlockBlob.Metadata.Add("originalName", file.FileName);
-                if (!string.IsNullOrEmpty(xff))
-                    cloudBlockBlob.Metadata.Add("sourceIp", xff);
-
-                log.LogInformation($"Uploading {file.FileName} as {blobName}");
-
-                var stopWatch = new Stopwatch();
-                stopWatch.Start();
-                using (var fileStream = file.OpenReadStream())
+                foreach (var file in content.Files)
                 {
-                    await cloudBlockBlob.UploadFromStreamAsync(fileStream);
+                    var blobName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}".Replace("\"", "");
+                    var cloudBlockBlob = cloudBlobContainer.GetBlockBlobReference(blobName);
+                    var xff = req.Headers.FirstOrDefault(x => x.Key == "X-Forwarded-For").Value.FirstOrDefault();
+
+                    blobNames.Add(blobName);
+                    cloudBlockBlob.Properties.ContentDisposition = file.ContentDisposition;
+                    cloudBlockBlob.Properties.ContentType = file.ContentType;
+                    cloudBlockBlob.Metadata.Add("originalName", file.FileName);
+                    if (!string.IsNullOrEmpty(xff))
+                        cloudBlockBlob.Metadata.Add("sourceIp", xff);
+
+                    log.LogInformation($"Uploading {file.FileName} as {blobName}");
+
+                    var stopWatch = new Stopwatch();
+                    stopWatch.Start();
+                    using (var fileStream = file.OpenReadStream())
+                    {
+                        await cloudBlockBlob.UploadFromStreamAsync(fileStream);
+                    }
+                    stopWatch.Stop();
+
+                    FileTrackerRepository.AddNew(file.FileName, blobName, stopWatch.ElapsedMilliseconds);
+
+                    // Add message in queue for next step
+                    var config = new ConfigurationBuilder()
+                        .AddEnvironmentVariables()
+                        .Build();
+                    var serviceBusConnection = config["AzureWebJobsServiceBus"];
+                    var queueName = "scan-for-virus";
+
+                    var messageSender = new MessageSender(serviceBusConnection, queueName);
+                    var message = new Message(Encoding.UTF8.GetBytes(blobName));
+
+                    await messageSender.SendAsync(message).ConfigureAwait(false);
+                    log.LogInformation($"Added message in {queueName}!");
                 }
-                stopWatch.Stop();
 
-                FileTrackerRepository.AddNew(file.FileName, blobName, stopWatch.ElapsedMilliseconds);
+                return new OkObjectResult(new { blobs = blobNames });
+            } else
+            {
+                log.LogError("No Files to Upload!");
 
-                // Add message in queue for next step
-                var config = new ConfigurationBuilder()
-                    .AddEnvironmentVariables()
-                    .Build();
-                var serviceBusConnection = config["AzureWebJobsServiceBus"];
-                var queueName = "scan-for-virus";
-
-                var messageSender = new MessageSender(serviceBusConnection, queueName);
-                var message = new Message(Encoding.UTF8.GetBytes(blobName));
-
-                await messageSender.SendAsync(message).ConfigureAwait(false);
-                log.LogInformation($"Added message in {queueName}!");
+                return new BadRequestObjectResult("No files found in request.");
             }
-
-            return new OkObjectResult(new { blobs = blobNames });
         }
     }
 }
