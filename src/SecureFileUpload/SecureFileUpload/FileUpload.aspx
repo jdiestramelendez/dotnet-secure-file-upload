@@ -2,9 +2,9 @@
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
     <br />
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <h3 class="panel-title">Local File Storage Provider</h3>
@@ -64,7 +64,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <div class="panel panel-info">
                     <div class="panel-heading">
                         <h3 class="panel-title">Azure Storage Provider</h3>
@@ -119,6 +119,46 @@
                             </div>
                             <div class="panel-body">
                                 <asp:Literal ID="litResultsAzure" runat="server"></asp:Literal>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="panel panel-info">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Asynchronous with Azure Functions/Storage</h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">File Upload</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <label for="csvFile1">CSV File:</label>
+                                    <input type="file" name="csvFile1" />
+                                    <br />
+                                    <button class="btn btn-primary" id="btnSubmitFileUpload" type="submit">Submit</button>
+                                </div>
+                            </div>
+
+                            <div class="panel panel-danger" id="pnlErrors">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">File Upload Error</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="errors"></div>
+                                </div>
+                            </div>
+
+                            <div class="panel panel-info" id="pnlResults">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title">File Upload Results</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div id="results"></div>
+                                </div>
                             </div>
                         </div>
                     </div>

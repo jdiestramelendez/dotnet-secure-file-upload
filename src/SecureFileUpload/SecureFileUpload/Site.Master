@@ -65,5 +65,11 @@
         </div>
 
     </form>
+    <script type="text/javascript">
+        window.fileUploadServiceUrl = "<%= ConfigurationManager.AppSettings["FileUploadServiceUrl"] %>";
+    </script>
+    <asp:PlaceHolder runat="server">
+        <%: Scripts.Render("~/bundles/FileUpload") %>
+    </asp:PlaceHolder>
 </body>
 </html>

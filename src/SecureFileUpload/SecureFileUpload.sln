@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureFileUpload", "SecureFileUpload\SecureFileUpload.csproj", "{64115C26-84BE-4570-B379-C86ABDF0032A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileGenerator", "FileGenerator\FileGenerator.csproj", "{950BF91A-2012-4FE1-9516-A6290853E908}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileGenerator", "FileGenerator\FileGenerator.csproj", "{950BF91A-2012-4FE1-9516-A6290853E908}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureFileUploadService", "SecureFileUploadService\SecureFileUploadService.csproj", "{8FF51564-5546-4FA6-AB43-EA3E66EEC15A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureFileUploadService", "SecureFileUploadService\SecureFileUploadService.csproj", "{8FF51564-5546-4FA6-AB43-EA3E66EEC15A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
