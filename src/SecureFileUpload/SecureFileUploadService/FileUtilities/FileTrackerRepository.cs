@@ -12,7 +12,7 @@ namespace SecureFileUploadService
         public static FileTracker AddNew(string originalFileName, string fileName, long elapsedTimeInMilliseconds)
         {
             var fileTracker = new FileTracker { OriginalFileName = originalFileName, FileName = fileName };
-            fileTracker.Operations.Add(new OperationResult { Name = "Storage", ElapsedTimeInMilliseconds = elapsedTimeInMilliseconds });
+            fileTracker.Operations.Add(new OperationResult { Name = "Storage", ElapsedTimeInMilliseconds = elapsedTimeInMilliseconds, Complete = true });
             fileTrackers.TryAdd(fileName, fileTracker);
             return fileTracker;
         }
