@@ -28,10 +28,12 @@ namespace SecureFileUploadService
             // Parse and Validate File
             var stopWatch = new Stopwatch();
             stopWatch.Start();
+            FileTrackerRepository.AddOperationResult(myQueueItem, "Parse and Validate");
+
             var parseErrors = CsvFile.Validate(memoryStream);
             stopWatch.Stop();
 
-            FileTrackerRepository.AddNewOperationResult(myQueueItem, "Parse and Validate", stopWatch.ElapsedMilliseconds, true);
+            FileTrackerRepository.UpdateOperationResult(myQueueItem, "Parse and Validate", stopWatch.ElapsedMilliseconds, true);
 
             if (parseErrors.Count > 0)
             {

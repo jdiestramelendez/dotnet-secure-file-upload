@@ -35,10 +35,12 @@ namespace SecureFileUploadService
 
             var stopWatch = new Stopwatch();
             stopWatch.Start();
+            FileTrackerRepository.AddOperationResult(myQueueItem, "Virus Scan");
+
             var scanResult = await virusScanner.ScanStreamAsync(memoryStream);
             stopWatch.Stop();
 
-            FileTrackerRepository.AddNewOperationResult(myQueueItem, "Virus Scan", stopWatch.ElapsedMilliseconds);
+            FileTrackerRepository.UpdateOperationResult(myQueueItem, "Virus Scan", stopWatch.ElapsedMilliseconds);
 
             log.LogInformation($"Scan Results for {myQueueItem}, Safe: {scanResult.IsSafe}, Message: {scanResult.Message}");
 

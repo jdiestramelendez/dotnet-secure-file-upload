@@ -24,11 +24,24 @@ namespace SecureFileUploadService
             return fileTracker;
         }
 
-        public static FileTracker AddNewOperationResult(string fileName, string name, long elapsedTimeInMilliseconds, bool? complete = null)
+        public static FileTracker AddOperationResult(string fileName, string name)
         {
             var fileTracker = Get(fileName);
 
-            fileTracker.Operations.Add(new OperationResult { Name = name, ElapsedTimeInMilliseconds = elapsedTimeInMilliseconds });
+            fileTracker.Operations.Add(new OperationResult { Name = name });
+
+            return fileTracker;
+        }
+
+        public static FileTracker UpdateOperationResult(string fileName, string name, long elapsedTimeInMilliseconds, bool? complete = null)
+        {
+            var fileTracker = Get(fileName);
+
+            var operationResult = fileTracker.Operations.Find(o => o.Name.Equals(name));
+
+            operationResult.ElapsedTimeInMilliseconds = elapsedTimeInMilliseconds;
+            operationResult.Complete = true;
+
             if (complete.HasValue)
                 fileTracker.ProcessingComplete = complete.Value;
 
