@@ -5,12 +5,14 @@ name: CI
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches:
+    - master
     paths:
     - '.github/workflows/azure.yml'
     - 'src/**'
   pull_request:
-    branches: [ master ]
+    branches:
+    - master
     paths:
     - '.github/workflows/azure.yml'
     - 'src/**'
