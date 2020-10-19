@@ -32,13 +32,13 @@ jobs:
       run: nuget restore src/SecureFileUpload/SecureFileUpload.sln
  
     - name: Build and Publish Web App
-      run: msbuild src/SecureFileUpload/SecureFileUpload/SecureFileUpload.csproj /p:Configuration=Release /p:DeployOnBuild=true
+      run: msbuild src/SecureFileUpload/SecureFileUpload/SecureFileUpload.csproj /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
  
     - name: Upload Artifact Web App
       uses: actions/upload-artifact@v1.0.0
       with:
         name: web_app
-        path: src\SecureFileUpload\SecureFileUpload\obj\Release\Package\SecureFileUpload.zip
+        path: src\SecureFileUpload\SecureFileUpload\bin\app.publish\
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
