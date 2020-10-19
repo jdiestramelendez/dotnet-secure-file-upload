@@ -9,12 +9,12 @@ on:
     branches: [ master ]
     paths:
     # - '.github/workflows/azure.yml'
-    - 'src/templates/**'
+    - 'src/**'
   pull_request:
     branches: [ master ]
     paths:
     # - '.github/workflows/azure.yml'
-    - 'src/templates/**'
+    - 'src/**'
 
 env:
   LOCATION: "eastus"
