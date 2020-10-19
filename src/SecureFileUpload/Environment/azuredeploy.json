@@ -288,6 +288,14 @@
     }
   ],
   "outputs": {
+    "WebAppName": {
+      "type": "string",
+      "value": "[variables('appServiceName')]"
+    },
+    "FunctionAppName": {
+      "type": "string",
+      "value": "[variables('functionAppName')]"
+    },
     "StorageAccountConnectionString": {
       "type": "string",
       "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), variables('storageAccountApiVersion')).keys[0].value)]"
