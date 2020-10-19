@@ -44,7 +44,10 @@ $(document).ready(function () {
             timeout: 5000,
             success: function (data, textStatus, jqXHR) {
                 $("#results").append("<pre>" + JSON.stringify(data, null, 2) + "</pre>");
-                if (!data.processingComplete) {
+                if (data.processingComplete) {
+                    $("#results").append("<div class='alert alert-success'>Processing Complete!</div>");
+                } else {
+                    $("#results").append("<div class='alert alert-info'>Checking for update...</div>");
                     setTimeout(getAndUpdateTrackerResults, 1000, filename);
                 }
             },
