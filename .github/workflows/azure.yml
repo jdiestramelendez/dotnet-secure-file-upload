@@ -19,7 +19,7 @@ jobs:
       uses: actions/upload-artifact@v1.0.0
       with:
         name: arm_template
-        path: src/SecureFileUpload/Environment/*.json
+        path: $GITHUB_WORKSPACE\src\SecureFileUpload\Environment\*.json
 
     - name: Setup MSBuild Path
       uses: warrenbuckley/Setup-MSBuild@v1
