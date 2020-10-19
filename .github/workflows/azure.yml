@@ -12,9 +12,6 @@ on:
 
 env:
   LOCATION: "eastus"
-  ARM_TEMPLATE_ZIP_FILE: ArmTemplates.zip
-  WEB_APP_ZIP_FILE: SecureFileUpload.zip
-  FUNCTION_APP_ZIP_FILE: SecureFileUploadService.zip
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -23,11 +20,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     
-    - name: Zip Arm Templates
-      run: |
-        cd src/SecureFileUpload/Environment
-        zip -r $GITHUB_WORKSPACE/$ARM_TEMPLATE_ZIP_FILE .json
-    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: arm_template
+        path: src/SecureFileUpload/Environment/*.json
+
     - name: Setup MSBuild Path
       uses: warrenbuckley/Setup-MSBuild@v1
        
