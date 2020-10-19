@@ -1,0 +1,294 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "defaultValue": "[concat('sfu', utcnow('yyyyMMdd'))]"
+    },
+    "cloudmersiveVirusScanApiKey": {
+      "type": "securestring",
+      "defaultValue": ""
+    }
+  },
+  "variables": {
+    "storageAccountName": "[concat(parameters('prefix'),'sa')]",
+    "storageAccountApiVersion": "2019-06-01",
+    "serviceBusName": "[concat(parameters('prefix'),'sb')]",
+    "serviceBusApiVersion": "2017-04-01",
+    "appServicePlanName": "[concat(parameters('prefix'),'asp')]",
+    "appServiceName": "[concat(parameters('prefix'),'as')]",
+    "functionAppName": "[concat(parameters('prefix'),'af')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "[variables('storageAccountApiVersion')]",
+      "name": "[variables('storageAccountName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Standard_ZRS",
+        "tier": "Standard"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "minimumTlsVersion": "TLS1_2",
+        "allowBlobPublicAccess": true,
+        "networkAcls": {
+          "bypass": "AzureServices",
+          "virtualNetworkRules": [],
+          "ipRules": [],
+          "defaultAction": "Allow"
+        },
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "apiVersion": "2019-06-01",
+      "name": "[concat(variables('storageAccountName'), '/default/files')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "properties": {
+        "defaultEncryptionScope": "$account-encryption-key",
+        "denyEncryptionScopeOverride": false,
+        "publicAccess": "None"
+      }
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces",
+      "apiVersion": "[variables('serviceBusApiVersion')]",
+      "name": "[variables('serviceBusName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "Basic",
+        "tier": "Basic"
+      },
+      "properties": {
+        "zoneRedundant": false
+      }
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces/AuthorizationRules",
+      "apiVersion": "[variables('serviceBusApiVersion')]",
+      "name": "[concat(variables('serviceBusName'), '/RootManageSharedAccessKey')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusName'))]"
+      ],
+      "properties": {
+        "rights": [
+          "Listen",
+          "Manage",
+          "Send"
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces/queues",
+      "apiVersion": "[variables('serviceBusApiVersion')]",
+      "name": "[concat(variables('serviceBusName'), '/parse-and-validate')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusName'))]"
+      ],
+      "properties": {
+        "lockDuration": "PT30S",
+        "maxSizeInMegabytes": 1024,
+        "requiresDuplicateDetection": false,
+        "requiresSession": false,
+        "defaultMessageTimeToLive": "P14D",
+        "deadLetteringOnMessageExpiration": false,
+        "enableBatchedOperations": true,
+        "duplicateDetectionHistoryTimeWindow": "PT10M",
+        "maxDeliveryCount": 10,
+        "status": "Active",
+        "enablePartitioning": false,
+        "enableExpress": false
+      }
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces/queues",
+      "apiVersion": "[variables('serviceBusApiVersion')]",
+      "name": "[concat(variables('serviceBusName'), '/scan-for-virus')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusName'))]"
+      ],
+      "properties": {
+        "lockDuration": "PT30S",
+        "maxSizeInMegabytes": 1024,
+        "requiresDuplicateDetection": false,
+        "requiresSession": false,
+        "defaultMessageTimeToLive": "P14D",
+        "deadLetteringOnMessageExpiration": false,
+        "enableBatchedOperations": true,
+        "duplicateDetectionHistoryTimeWindow": "PT10M",
+        "maxDeliveryCount": 10,
+        "status": "Active",
+        "enablePartitioning": false,
+        "enableExpress": false
+      }
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces/queues",
+      "apiVersion": "[variables('serviceBusApiVersion')]",
+      "name": "[concat(variables('serviceBusName'), '/valid')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusName'))]"
+      ],
+      "properties": {
+        "lockDuration": "PT30S",
+        "maxSizeInMegabytes": 1024,
+        "requiresDuplicateDetection": false,
+        "requiresSession": false,
+        "defaultMessageTimeToLive": "P14D",
+        "deadLetteringOnMessageExpiration": false,
+        "enableBatchedOperations": true,
+        "duplicateDetectionHistoryTimeWindow": "PT10M",
+        "maxDeliveryCount": 10,
+        "status": "Active",
+        "enablePartitioning": false,
+        "enableExpress": false
+      }
+    },
+    {
+      "apiVersion": "2018-11-01",
+      "name": "[variables('appServicePlanName')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "kind": "",
+      "tags": {},
+      "dependsOn": [],
+      "properties": {
+        "workerSize": "0",
+        "workerSizeId": "0",
+        "numberOfWorkers": "1"
+      },
+      "sku": {
+        "Tier": "Standard",
+        "Name": "S1"
+      }
+    },
+    {
+      "apiVersion": "2018-11-01",
+      "name": "[variables('appServiceName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "CloudmersiveVirusScanApiKey",
+              "value": "[parameters('cloudmersiveVirusScanApiKey')]"
+            },
+            {
+              "name": "AzureStorageConnectionString",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), variables('storageAccountApiVersion')).keys[0].value)]"
+            },
+            {
+              "name": "FileUploadServiceUrl",
+              "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/')]"
+            }
+          ],
+          "metadata": [
+            {
+              "name": "CURRENT_STACK",
+              "value": "dotnet"
+            }
+          ],
+          "phpVersion": "OFF",
+          "netFrameworkVersion": "v4.0",
+          "alwaysOn": true
+        },
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "clientAffinityEnabled": true
+      }
+    },
+    {
+      "apiVersion": "2018-11-01",
+      "name": "[variables('functionAppName')]",
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "dependsOn": [
+        "[concat('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusName'))]"
+      ],
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~3"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "dotnet"
+            },
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('15561d27-5df0-4f7b-9cb8-a4a771b9fd71','sfu20201019','Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+            },
+            {
+              "name": "AzureStorage:ConnectionString",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',variables('storageAccountName'),';AccountKey=',listKeys(resourceId('15561d27-5df0-4f7b-9cb8-a4a771b9fd71','sfu20201019','Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2019-06-01').keys[0].value,';EndpointSuffix=','core.windows.net')]"
+            },
+            {
+              "name": "AzureStorage:Container",
+              "value": "files"
+            },
+            {
+              "name": "AzureWebJobsServiceBus",
+              "value": "[listKeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusName'), 'RootManageSharedAccessKey'), variables('serviceBusApiVersion')).primaryConnectionString]"
+            },
+            {
+              "name": "CloudmersiveVirusScanApiKey",
+              "value": "[parameters('cloudmersiveVirusScanApiKey')]"
+            }
+          ],
+          "use32BitWorkerProcess": true,
+          "alwaysOn": true,
+          "cors": {
+            "allowedOrigins": [ "*" ]
+          }
+        },
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "clientAffinityEnabled": true
+      }
+    }
+  ],
+  "outputs": {
+    "StorageAccountConnectionString": {
+      "type": "string",
+      "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), variables('storageAccountApiVersion')).keys[0].value)]"
+    },
+    "ServiceBusConnectionString": {
+      "type": "string",
+      "value": "[listKeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', variables('serviceBusName'), 'RootManageSharedAccessKey'), variables('serviceBusApiVersion')).primaryConnectionString]"
+    }
+  }
+}
