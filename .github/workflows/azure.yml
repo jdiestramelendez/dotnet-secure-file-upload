@@ -90,7 +90,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with: 
           app-name: ${{ steps.arm.outputs.WebAppName }}
-          package: artifacts/web_app/
+          package: artifacts/web_app/SecureFileUpload.zip
 
       - name: Deploy Function App
         uses: Azure/functions-action@v1.1.5
