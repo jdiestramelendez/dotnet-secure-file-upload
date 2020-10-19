@@ -3,7 +3,17 @@ name: CI
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
-on: [push]
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - '.github/workflows/azure.yml'
+    - 'src/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - '.github/workflows/azure.yml'
+    - 'src/**'
 
 env:
   LOCATION: "eastus"
