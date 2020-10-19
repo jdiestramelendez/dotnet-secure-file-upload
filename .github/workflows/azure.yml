@@ -7,6 +7,7 @@ on: [push]
 
 env:
   LOCATION: "eastus"
+  RESOURCE_GROUP: "sfudemo"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -52,3 +53,42 @@ jobs:
       with:
         name: function_app
         path: src/SecureFileUpload/SecureFileUploadService/bin/Release/netcoreapp3.1/
+  deploy:
+    runs-on: windows-latest
+    steps:
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.0.5
+        with:
+          path: artifacts
+      
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          # Paste output of `az ad sp create-for-rbac` as value of secret variable: AZURE_CREDENTIALS
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create Azure Resource Group
+        uses: azure/CLI@v1
+        with:
+          inlineScript: az group create -g $RESOURCE_GROUP -l $LOCATION
+
+      - name: Deploy ARM Template
+        uses: azure/arm-deploy@v1
+        with:
+          subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          resourceGroupName: $RESOURCE_GROUP
+          template: artifacts/arm_template/azuredeploy.json
+          parameters: cloudmersiveVirusScanApiKey=${{ secrets.CLOUDMERSIVEVIRUSSCANAPI }}
+
+      - name: Deploy Web App
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp deployment source config-zip --name customer-demo-webapp --resource-group $RESOURCE_GROUP --src artifacts/web_app.zip
+      
+      - name: Deploy Function App
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az webapp deployment source config-zip --name customer-demo-client-us --resource-group $RESOURCE_GROUP --src artifacts/function_app.zip
+      
