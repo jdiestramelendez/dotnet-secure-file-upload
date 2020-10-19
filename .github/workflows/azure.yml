@@ -61,7 +61,11 @@ jobs:
         uses: actions/download-artifact@v2.0.5
         with:
           path: artifacts
-      
+
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: artifacts
+  
       - name: Azure Login
         uses: Azure/login@v1
         with:
@@ -86,7 +90,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         with: 
           app-name: ${{ steps.arm.outputs.WebAppName }}
-          package: artifacts/web_app
+          package: artifacts/web_app/
 
       - name: Deploy Function App
         uses: Azure/functions-action@v1.1.5
