@@ -4,10 +4,13 @@
   "parameters": {
     "prefix": {
       "type": "string",
-      "defaultValue": "[concat('sfu', utcnow('yyyyMMdd'))]"
+      "defaultValue": "[concat('sfu', utcnow('yyyyMMdd'))]",
+      "metadata": {
+        "description":  "A prefix for all resource names"
+      }
     },
     "cloudmersiveVirusScanApiKey": {
-      "type": "securestring",
+      "type": "string",
       "defaultValue": ""
     }
   },
