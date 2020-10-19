@@ -261,6 +261,10 @@
         "siteConfig": {
           "appSettings": [
             {
+              "name": "LocalStoragePath",
+              "value": "D:\\Local"
+            },
+            {
               "name": "CloudmersiveVirusScanApiKey",
               "value": "[parameters('cloudmersiveVirusScanApiKey')]"
             },
