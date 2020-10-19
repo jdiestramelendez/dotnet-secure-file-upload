@@ -7,14 +7,8 @@ name: CI
 on:
   push:
     branches: [ master ]
-    paths:
-    # - '.github/workflows/azure.yml'
-    - 'src/SecureFileUpload/**'
   pull_request:
     branches: [ master ]
-    paths:
-    # - '.github/workflows/azure.yml'
-    - 'src/SecureFileUpload/**'
 
 env:
   LOCATION: "eastus"
