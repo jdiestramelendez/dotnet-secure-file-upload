@@ -11,7 +11,10 @@
     },
     "cloudmersiveVirusScanApiKey": {
       "type": "string",
-      "defaultValue": ""
+      "defaultValue": "",
+      "metadata": {
+        "description": "A Key for the Cloudmersive Virus Scan API"
+      }
     }
   },
   "variables": {
