@@ -33,11 +33,11 @@ jobs:
     - name: Build and Publish Web App
       run: msbuild src/SecureFileUpload/SecureFileUpload/SecureFileUpload.csproj /p:Configuration=Release /p:DeployOnBuild=true
  
-    - name: Upload Artifact
+    - name: Upload Artifact Web App
       uses: actions/upload-artifact@v1.0.0
       with:
         name: web_app
-        path: src/SecureFileUpload/bin/Release/Publish
+        path: src\SecureFileUpload\SecureFileUpload\obj\Release\Package\SecureFileUpload.zip
 
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
@@ -47,7 +47,7 @@ jobs:
     - name: Publish Function app
       run: dotnet publish src/SecureFileUpload/SecureFileUploadService -c Release
 
-    - name: Upload Artifact
+    - name: Upload Artifact Function App
       uses: actions/upload-artifact@v1.0.0
       with:
         name: function_app
