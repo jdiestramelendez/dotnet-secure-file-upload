@@ -1,10 +1,17 @@
 $(document).ready(function () {
     $("#pnlResults, #pnlErrors").hide();
 
+    function addToken(url) {
+        if (window.fileUploadServiceToken != "") {
+            url = url.concat("?code=" + window.fileUploadServiceToken);
+        }
+        return url;
+    }
+
     $("#btnSubmitFileUpload").click(function (event) {
         $("#pnlResults, #pnlErrors").hide();
         event.preventDefault();
-        var fileUploadUrl = window.window.fileUploadServiceUrl.concat("FileUpload");
+        var fileUploadUrl = addToken(window.window.fileUploadServiceUrl.concat("FileUpload"));
 
         var data = new FormData();
         var field = $('[name=csvFile1]')[0];
@@ -35,7 +42,7 @@ $(document).ready(function () {
 
     function getAndUpdateTrackerResults(filename) {
         $("#pnlResults").show();
-        var url = window.fileUploadServiceUrl.concat('FileTracker/').concat(filename);
+        var url = addToken(window.fileUploadServiceUrl.concat('FileTracker/').concat(filename));
         $.ajax({
             type: "GET",
             url: url,
