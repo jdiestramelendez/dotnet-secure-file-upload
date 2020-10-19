@@ -1,0 +1,67 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+    paths:
+    - '.github/workflows/azure.yml'
+    - 'src/templates/**'
+  pull_request:
+    branches: [ master ]
+    paths:
+    - '.github/workflows/azure.yml'
+    - 'src/templates/**'
+
+env:
+  LOCATION: "eastus"
+  ARM_TEMPLATE_ZIP_FILE: ArmTemplates.zip
+  WEB_APP_ZIP_FILE: SecureFileUpload.zip
+  FUNCTION_APP_ZIP_FILE: SecureFileUploadService.zip
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Zip Arm Templates
+      run: |
+        cd src/SecureFileUpload/Environment
+        zip -r $GITHUB_WORKSPACE/$ARM_TEMPLATE_ZIP_FILE .json
+    
+    - name: Setup MSBuild Path
+      uses: warrenbuckley/Setup-MSBuild@v1
+       
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.2
+     
+    - name: Restore NuGet Packages
+      run: nuget restore src/SecureFileUpload/SecureFileUpload.sln
+ 
+    - name: Build and Publish Web App
+      run: msbuild src/SecureFileUpload/SecureFileUpload/SecureFileUpload.csproj /p:Configuration=Release /p:DeployOnBuild=true
+ 
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: web_app
+        path: src/SecureFileUpload/bin/Release/Publish
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 3.1.301
+
+    - name: Publish Function app
+      run: dotnet publish src/SecureFileUpload/SecureFileUploadService -c Release
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: function_app
+        path: src/SecureFileUpload/SecureFileUploadService/bin/Release/netcoreapp3.1/
