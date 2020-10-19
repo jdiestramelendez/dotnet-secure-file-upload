@@ -77,7 +77,7 @@ jobs:
         uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-          resourceGroupName: $RESOURCE_GROUP
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
           template: artifacts/arm_template/azuredeploy.json
           parameters: cloudmersiveVirusScanApiKey=${{ secrets.CLOUDMERSIVEVIRUSSCANAPIKEY }}
 
