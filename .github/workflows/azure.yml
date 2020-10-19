@@ -7,15 +7,6 @@ on:
   push:
     branches:
     - master
-    paths:
-    - '.github/workflows/azure.yml'
-    - 'src/**'
-  pull_request:
-    branches:
-    - master
-    paths:
-    - '.github/workflows/azure.yml'
-    - 'src/**'
 
 env:
   LOCATION: "eastus"
