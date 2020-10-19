@@ -86,11 +86,11 @@ jobs:
         uses: azure/webapps-deploy@v2
         with: 
           app-name: ${{ steps.arm.outputs.WebAppName }}
-          package: artifacts/web_app.zip
+          package: artifacts/web_app
 
       - name: Deploy Function App
         uses: Azure/functions-action@v1.1.5
         with:
           app-name: ${{ steps.arm.outputs.FunctionAppName }}
           # Path to package or folder. *.zip or a folder to deploy
-          package: artifacts/function_app.zip
+          package: artifacts/function_app
