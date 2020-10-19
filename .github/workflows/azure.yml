@@ -83,14 +83,13 @@ jobs:
           parameters: cloudmersiveVirusScanApiKey=${{ secrets.CLOUDMERSIVEVIRUSSCANAPIKEY }}
 
       - name: Deploy Web App
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az webapp deployment source config-zip --name ${{ steps.arm.outputs.WebAppName }} --resource-group $RESOURCE_GROUP --src artifacts/web_app/
-      
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ steps.arm.outputs.WebAppName }}
+          package: artifacts/web_app
+          
       - name: Deploy Function App
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az webapp deployment source config-zip --name ${{ steps.arm.outputs.FunctionAppName }} --resource-group $RESOURCE_GROUP --src artifacts/function_app/
-      
+        uses: azure/webapps-deploy@v2
+        with: 
+          app-name: ${{ steps.arm.outputs.FunctionAppName }}
+          package: artifacts/function_app
