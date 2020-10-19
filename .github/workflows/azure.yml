@@ -74,6 +74,7 @@ jobs:
           inlineScript: az group create -g $RESOURCE_GROUP -l $LOCATION
 
       - name: Deploy ARM Template
+        id: arm
         uses: azure/arm-deploy@v1
         with:
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
@@ -85,11 +86,11 @@ jobs:
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az webapp deployment source config-zip --name customer-demo-webapp --resource-group $RESOURCE_GROUP --src artifacts/web_app/
+            az webapp deployment source config-zip --name ${{ steps.deploy.arm.WebAppName }} --resource-group $RESOURCE_GROUP --src artifacts/web_app/
       
       - name: Deploy Function App
         uses: azure/CLI@v1
         with:
           inlineScript: |
-            az webapp deployment source config-zip --name customer-demo-client-us --resource-group $RESOURCE_GROUP --src artifacts/function_app/
+            az webapp deployment source config-zip --name ${{ steps.deploy.arm.FunctionAppName }} --resource-group $RESOURCE_GROUP --src artifacts/function_app/
       
