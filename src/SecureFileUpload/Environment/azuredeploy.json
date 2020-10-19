@@ -194,53 +194,13 @@
     },
     {
       "apiVersion": "2018-11-01",
-      "name": "[variables('appServiceName')]",
-      "type": "Microsoft.Web/sites",
-      "location": "[resourceGroup().location]",
-      "tags": {},
-      "dependsOn": [
-        "[concat('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
-      ],
-      "properties": {
-        "siteConfig": {
-          "appSettings": [
-            {
-              "name": "CloudmersiveVirusScanApiKey",
-              "value": "[parameters('cloudmersiveVirusScanApiKey')]"
-            },
-            {
-              "name": "AzureStorageConnectionString",
-              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), variables('storageAccountApiVersion')).keys[0].value)]"
-            },
-            {
-              "name": "FileUploadServiceUrl",
-              "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/')]"
-            }
-          ],
-          "metadata": [
-            {
-              "name": "CURRENT_STACK",
-              "value": "dotnet"
-            }
-          ],
-          "phpVersion": "OFF",
-          "netFrameworkVersion": "v4.0",
-          "alwaysOn": true
-        },
-        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
-        "clientAffinityEnabled": true
-      }
-    },
-    {
-      "apiVersion": "2018-11-01",
       "name": "[variables('functionAppName')]",
       "type": "Microsoft.Web/sites",
       "kind": "functionapp",
       "location": "[resourceGroup().location]",
       "tags": {},
       "dependsOn": [
-        "[concat('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]",
         "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
         "[resourceId('Microsoft.ServiceBus/namespaces', variables('serviceBusName'))]"
       ],
@@ -281,6 +241,51 @@
           "cors": {
             "allowedOrigins": [ "*" ]
           }
+        },
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "clientAffinityEnabled": true
+      }
+    },
+    {
+      "apiVersion": "2018-11-01",
+      "name": "[variables('appServiceName')]",
+      "type": "Microsoft.Web/sites",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms/', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('functionAppName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ],
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "CloudmersiveVirusScanApiKey",
+              "value": "[parameters('cloudmersiveVirusScanApiKey')]"
+            },
+            {
+              "name": "AzureStorageConnectionString",
+              "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountName'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), variables('storageAccountApiVersion')).keys[0].value)]"
+            },
+            {
+              "name": "FileUploadServiceUrl",
+              "value": "[concat('https://', variables('functionAppName'), '.azurewebsites.net/api/')]"
+            },
+            {
+              "name": "FileUploadServiceToken",
+              "value": "[listkeys(concat(resourceId('Microsoft.Web/sites', variables('functionAppName')), '/host/default'),'2018-11-01').functionKeys.default]"
+            }
+          ],
+          "metadata": [
+            {
+              "name": "CURRENT_STACK",
+              "value": "dotnet"
+            }
+          ],
+          "phpVersion": "OFF",
+          "netFrameworkVersion": "v4.0",
+          "alwaysOn": true
         },
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
         "clientAffinityEnabled": true
