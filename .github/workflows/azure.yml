@@ -55,6 +55,7 @@ jobs:
         path: src/SecureFileUpload/SecureFileUploadService/bin/Release/netcoreapp3.1/
   deploy:
     runs-on: windows-latest
+    needs: build
     steps:
       - name: Download a Build Artifact
         uses: actions/download-artifact@v2.0.5
