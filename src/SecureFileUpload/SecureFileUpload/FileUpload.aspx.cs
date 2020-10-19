@@ -29,8 +29,6 @@ namespace SecureFileUpload
         protected void Page_Load(object sender, EventArgs e)
         {
             UpdateFileList();
-            //ResetForm(FileStorageProvider.Local);
-            //ResetForm(FileStorageProvider.AzureStorageBlobs );
         }
 
         private void UpdateFileList()
