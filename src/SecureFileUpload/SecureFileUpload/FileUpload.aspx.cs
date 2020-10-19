@@ -21,7 +21,7 @@ namespace SecureFileUpload
 
         public FileUpload()
         {
-            this.localFileStorage = new LocalFileStorage(Server.MapPath("App_Data"));
+            this.localFileStorage = new LocalFileStorage();
             this.azureFileStorage = new AzureFileStorage();
             this.virusScanner = new CloudmersiveVirusScanner();
         }

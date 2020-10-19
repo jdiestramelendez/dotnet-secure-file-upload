@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Web;
 
@@ -9,9 +10,9 @@ namespace SecureFileUpload.FileUtilities
     {
         private string basePath;
 
-        public LocalFileStorage(string basePath)
+        public LocalFileStorage()
         {
-            this.basePath = basePath;
+            this.basePath = HttpContext.Current.Server.MapPath(ConfigurationManager.AppSettings["LocalStoragePath"]);
         }
 
         private string ResolveFullPath(string filename)
