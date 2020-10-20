@@ -259,6 +259,9 @@
       ],
       "properties": {
         "siteConfig": {
+          "defaultDocuments": [
+            "FileUpload.aspx"
+          ],
           "appSettings": [
             {
               "name": "LocalStoragePath",
