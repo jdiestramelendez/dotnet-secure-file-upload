@@ -210,6 +210,7 @@
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <None Include="Properties\PublishProfiles\IISProfile.pubxml" />
     <None Include="SampleFiles\valid_1mb.csv" />
     <None Include="SampleFiles\empty.csv" />
     <None Include="SampleFiles\valid_5mb.csv" />
