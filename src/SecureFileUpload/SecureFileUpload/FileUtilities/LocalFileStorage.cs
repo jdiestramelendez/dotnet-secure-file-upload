@@ -12,11 +12,16 @@ namespace SecureFileUpload.FileUtilities
 
         public LocalFileStorage()
         {
-#if DEBUG
-            this.basePath = HttpContext.Current.Server.MapPath("App_Data");
-#else
-            this.basePath = Environment.GetEnvironmentVariable("TMP");
-#endif
+            var path = ConfigurationManager.AppSettings["LocalStoragePath"];
+            if (!Path.IsPathRooted(path))
+            {
+                path = HttpContext.Current.Server.MapPath(path);
+            }
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            this.basePath = path;
         }
 
         private string ResolveFullPath(string filename)
