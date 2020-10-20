@@ -225,7 +225,7 @@
             },
             {
               "name": "AzureStorage:Container",
-              "value": "files"
+              "value": "secure-file-upload"
             },
             {
               "name": "AzureWebJobsServiceBus",
