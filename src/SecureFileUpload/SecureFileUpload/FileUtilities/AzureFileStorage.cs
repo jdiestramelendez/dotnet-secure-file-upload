@@ -21,7 +21,7 @@ namespace SecureFileUpload.FileUtilities
             string connectionString = ConfigurationManager.AppSettings["AzureStorageConnectionString"];
             blobServiceClient = new BlobServiceClient(connectionString);
             containerClient = blobServiceClient.GetBlobContainerClient(ContainerName);
-            if (containerClient == null)
+            if (containerClient == null || !containerClient.Exists())
                 containerClient = blobServiceClient.CreateBlobContainer(ContainerName);
         }
 

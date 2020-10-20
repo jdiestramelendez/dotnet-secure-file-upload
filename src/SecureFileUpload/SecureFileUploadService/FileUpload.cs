@@ -25,6 +25,11 @@ namespace SecureFileUploadService
             ILogger log,
             [Blob("%AzureStorage:Container%", FileAccess.Write, Connection = "AzureStorage:ConnectionString")] CloudBlobContainer cloudBlobContainer)
         {
+            if (!(await cloudBlobContainer.ExistsAsync()))
+            {
+                await cloudBlobContainer.CreateAsync();
+            }
+
             var content = await req.ReadFormAsync();
             var blobNames = new List<string>();
 
